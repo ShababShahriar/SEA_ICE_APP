@@ -1,13 +1,17 @@
 {
   "project_info": {
+
     "project_id": "seaiceapp-68b1a",
     "project_number": "460488264037",
     "name": "SeaIceApp"
+
   },
   "client": [
     {
       "client_info": {
+
         "mobilesdk_app_id": "1:460488264037:android:641a3bdc83898ae5",
+
         "client_id": "android:com.example.wasif.seaiceapp",
         "client_type": 1,
         "android_client_info": {
