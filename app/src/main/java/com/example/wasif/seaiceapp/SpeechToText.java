@@ -102,7 +102,7 @@ public class SpeechToText extends AppCompatActivity {
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     txtSpeechInput.setText(result.get(0));
-                    Log.d("returned answer:",result.get(0));
+                    Log.d("returned answer:",result.toString());
                 }
                 break;
             }
