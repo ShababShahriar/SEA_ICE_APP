@@ -145,6 +145,8 @@ public class JSONParser {
         //final String BASE_URL = "http://192.168.0.103/uc_brac_git/uc_server/index.php/home";
         final String BASE_URL = "";
 
+        Log.d("inside http req","come");
+
         URL url;
 //        List<Pair> paramaters = new ArrayList<Pair>();
         // Making HTTP request
@@ -176,8 +178,10 @@ public class JSONParser {
                 }
             }
             else if(method == "GET") {
-                url = new URL(BASE_URL + urlParameter + "?" + getQuery(params));
-
+                Log.d("we have reached here"," finally");
+                //url = new URL(BASE_URL + urlParameter + "?" + getQuery(params));
+                url  = new URL(urlParameter);
+                Log.d("just before making the call",url.toString());
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod(method);
                 urlConnection.setDoInput(true);
@@ -205,7 +209,7 @@ public class JSONParser {
                 return null;
             }
             jsonString = buffer.toString();
-            //Log.d("Input Stream: ", jsonString);
+            Log.d("result Stream: ", jsonString);
             urlConnection.disconnect();
 
         } catch (IOException e) {

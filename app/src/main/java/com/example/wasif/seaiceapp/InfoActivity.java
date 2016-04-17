@@ -13,7 +13,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
@@ -26,6 +28,7 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
 
     Button btnShowImage;
     ImageView imageIceRadar;
+    TextView txtTempData;
 
 
     @Override
@@ -33,10 +36,12 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
 
-        btnShowImage = (Button)(findViewById(R.id.btnShowImage));
+        btnShowImage = (Button) (findViewById(R.id.btnShowImage));
         btnShowImage.setOnClickListener(this);
 
-        imageIceRadar = (ImageView)(findViewById(R.id.imgIceRadar));
+        imageIceRadar = (ImageView) (findViewById(R.id.imgIceRadar));
+
+        txtTempData = (TextView) (findViewById(R.id.txtTemp));
 
     }
 
@@ -65,12 +70,57 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
 
-        if(v.getId() == R.id.btnShowImage){
+        if (v.getId() == R.id.btnShowImage) {
             Log.d("clicked: ", "yes");
             //dispathPuffinFeeder();
-            new getPuffinResponse().execute();
+            //new getPuffinResponse().execute();
+            new bringTempDataTask().execute();
         }
     }
+
+    class bringTempDataTask extends AsyncTask<String, Void, String> {
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        protected String doInBackground(String... args) {
+
+            JSONParser jParser = new JSONParser();
+            // Building Parameters
+            List<Pair> params = new ArrayList<Pair>();
+
+            // getting JSON string from URL
+            String tempData = jParser.makeHttpRequestToGetString("http://coastwatch.pfeg.noaa.gov/erddap/tabledap/pmelTaoDySst.json?longitude,latitude,time,station,wmo_platform_code,T_25&time>=2015-05-23T12:00:00Z&time<=2015-05-31T12:00:00Z", "GET", params);
+
+            JSONObject tempJSON = null;
+            try {
+                tempJSON =new JSONObject(tempData);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.d("returned data",tempJSON.toString());
+            return null;
+
+
+        }
+
+
+
+
+        protected void onPostExecute(String a) {
+
+
+
+
+        }
+    }
+
+
+
 
     class getPuffinResponse extends AsyncTask<String, Void, String> {
 
@@ -155,59 +205,8 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
 
         }
     }
-
-  /*
-
-    private void dispathPuffinFeeder() {
-        final TextView mTxtDisplay;
-        ImageView mImageView;
-        JSONObject params = new JSONObject();
-        mTxtDisplay = (TextView) findViewById(R.id.txtPuffinResponse);
-        String url = "http://feeder.gina.alaska.edu/radar-uaf-barrow-seaice-images.json";
-        RequestQueue queue = Volley.newRequestQueue(this);
-
-
-        final JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                url, params,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("Debug", response.toString());
-                        //TODO parsing code
-                        //parseNews(response);
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d("", "Error: " + error.getMessage());
-
-            }
-        });
-
-
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        mTxtDisplay.setText("Response: " + response.toString());
-                        Log.d("response: ","ok i am back");
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO Auto-generated method stub
-
-                    }
-                });
-
-
-// Access the RequestQueue through your singleton class.
-        //MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
-        queue.add(jsObjRequest);
-    }
-    */
 }
+
+
+
+
