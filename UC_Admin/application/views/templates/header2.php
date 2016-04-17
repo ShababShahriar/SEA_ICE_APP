@@ -18,6 +18,7 @@
     <link href="<?php echo base_url("assets/css/dashboard.css"); ?>" rel="stylesheet">
     <script src="<?php echo base_url("assets/js/ie-emulation-modes-warning.js"); ?>"></script>
     <link href="<?php echo base_url("assets/css/mynavbar.css"); ?>" rel="stylesheet">
+    <link href="<?php echo base_url("assets/css/newlogin.css"); ?>" rel="stylesheet">
   </head>
 
   <body>

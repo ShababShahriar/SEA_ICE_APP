@@ -31,8 +31,8 @@ class Home extends CI_Controller {
 			$data = array(
                'login_error' => false
 			);
+			$this->load->view('newlogin',$data);
 			//$this->load->view('admin-login',$data);
-			$this->load->view('admin-login',$data);
 		}
 	}
 	
@@ -43,7 +43,7 @@ class Home extends CI_Controller {
 			$data = array('admin_name'=>trim($_POST['admin_name']),'password'=>($_POST["password"]));
 			
 			$query= $this->admin_model->get_loginInfo($data);
-			print_r($query->row_array());
+			//print_r($query->row_array());
 			
 			if($query->num_rows()==1)
 			{
@@ -58,7 +58,7 @@ class Home extends CI_Controller {
 				$data = array(
 				   'login_error' => true
 				);
-				$this->load->view('admin-login',$data);
+				$this->load->view('newlogin',$data);
 			}
 			
 		}
@@ -67,7 +67,7 @@ class Home extends CI_Controller {
 			$data = array(
 				   'login_error' => false
 				);
-			$this->load->view('admin-login',$data);
+			$this->load->view('newlogin',$data);
 		}
 		
 	}
