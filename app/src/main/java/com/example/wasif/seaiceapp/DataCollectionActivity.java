@@ -31,7 +31,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class DataCollectionActivity extends AppCompatActivity implements  GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener{
@@ -228,6 +232,23 @@ public class DataCollectionActivity extends AppCompatActivity implements  Google
         }
     }
 
+    private String getCurrentTimestamp(){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
+        //DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+        Date date = new Date();
+//            dateFormat.format(date);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        //cal.add(Calendar.MINUTE, -1 * timeToSubtract);
+        Date newDate = cal.getTime();
+        //Log.d("timestamp", dateFormat.format(newDate));
+
+        String timestamp = dateFormat.format(newDate);
+        //Log.d("timestamp: ", "" + timestamp);
+        return timestamp;
+    }
+
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -304,10 +325,11 @@ public class DataCollectionActivity extends AppCompatActivity implements  Google
             Toast.makeText(this, mLastLocation.getLatitude() + " " + mLastLocation.getLongitude(), Toast.LENGTH_LONG).show();
             convertAudioFileIntoByteArrayAndRemoveTheFile(outputFile);
             convertBitmapIntoByteArray(imageBitmap);
+            String timeStamp = getCurrentTimestamp();
             //Log.d(LOG_TAG,mLastLocation.toString());
             //Log.d(LOG_TAG, new String(imageByteArray));
             //Log.d(LOG_TAG, new String(audioByteArray));
-            CollectedData dataToBeSEnt =new CollectedData(imageByteArray,audioByteArray,mLastLocation.getLatitude()+"",mLastLocation.getLongitude()+"");
+            CollectedData dataToBeSEnt =new CollectedData(imageByteArray,audioByteArray,mLastLocation.getLatitude()+"",mLastLocation.getLongitude()+"",timeStamp,Utility.getUserId());
             sendDataToApproriateDatabase(dataToBeSEnt);
         }
 
@@ -318,11 +340,16 @@ public class DataCollectionActivity extends AppCompatActivity implements  Google
         if(checkInternetConnection()){
              new SendDataTask().execute(dataToBeSent);
         }
-        /*
-        if(checkInternetConnection()){
 
+      else{
+            storeDataInSQLite(dataToBeSent);
         }
-        */
+    }
+
+    private void storeDataInSQLite(CollectedData dataToBeSent) {
+
+        DBHelper helper = new DBHelper(this);
+        helper.insertRecord(dataToBeSent);
     }
 
     @Override
@@ -354,7 +381,11 @@ public class DataCollectionActivity extends AppCompatActivity implements  Google
             params.add(new Pair("longitude", dataToBeSent.getLongitude()));
             params.add(new Pair("image", Base64.encodeToString(dataToBeSent.getImage(), 0)));
             params.add(new Pair("audio", Base64.encodeToString(dataToBeSent.getAudio(), 0)));
-            Log.d("just before sending ",dataToBeSent.toString());
+            params.add(new Pair("time", dataToBeSent.getTimeOfRecording()));
+            params.add(new Pair("userId", dataToBeSent.getUserId()));
+
+
+            Log.d("just before sending ", dataToBeSent.toString());
             // getting JSON string from URL
             //JSONObject responseJson = jParser.makeHttpRequest("/insertData", "GET", params);
             //Log.d("returned data", responseJson.toString());

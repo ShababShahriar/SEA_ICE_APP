@@ -115,13 +115,7 @@ public class JSONParser {
             //System.out.println(jsonString);
              Log.d("jsonString before: ", jsonString);
 
-             //jsonString = jsonString.replace("/","esp");
-            int findPrev= jsonString.indexOf("large");
-            Log.d("found large at",findPrev+"");
-            int picAdd = findPrev + new String("large").length()+2;
-            int lastAdd = jsonString.indexOf("}",picAdd);
-            String pichttp = jsonString.substring(picAdd,lastAdd);
-            Log.d("extracted http id",pichttp);
+
 
 
             Log.d("jsonString after: ", jsonString);

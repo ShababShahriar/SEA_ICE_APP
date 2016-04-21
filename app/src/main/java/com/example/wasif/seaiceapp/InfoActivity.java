@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class InfoActivity extends AppCompatActivity implements View.OnClickListener {
@@ -73,8 +74,8 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
         if (v.getId() == R.id.btnShowImage) {
             Log.d("clicked: ", "yes");
             //dispathPuffinFeeder();
-            //new getPuffinResponse().execute();
-            new bringTempDataTask().execute();
+            new getPuffinResponse().execute();
+            //new bringTempDataTask().execute();
         }
     }
 
@@ -127,6 +128,7 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
       JSONObject jsonGetRes;
       Drawable theIceRadar;
       Bitmap  bmpSEaIceRadar;
+        ArrayList<Bitmap> allImageBitmaps;
 
         @Override
         protected void onPreExecute() {
@@ -142,18 +144,28 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
 
             // getting JSON string from URL
             String responseFromPuffinServer= jParser.makeHttpRequestToGetString("http://feeder.gina.alaska.edu/radar-uaf-barrow-seaice-images.json", "GET", params);
-            String imageUrl = extractUrlOfTheLargeImage(responseFromPuffinServer);
-            Log.d("imageURL",imageUrl);
-            //removing the  " " things.
-            imageUrl=imageUrl.substring(1,imageUrl.length()-1);
-            Log.d("after imageURL",imageUrl);
 
-            try {
-                //imageUrl = imageUrl.replaceAll(" ", "%20");
-                bmpSEaIceRadar = LoadImageFromWebOperations(new URL(imageUrl));
-            } catch (MalformedURLException e) {
-                Log.d("url not formed"," correctly");
-                e.printStackTrace();
+                try {
+                    JSONObject imageJSON = new JSONObject(responseFromPuffinServer);
+                    Log.d("image json",imageJSON.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            ArrayList<String> allImageUrls = extractUrlOfTheLargeImage(responseFromPuffinServer);
+            Collections.reverse(allImageUrls);
+
+            allImageBitmaps = new ArrayList<Bitmap>();
+            for(int i=0;i<allImageUrls.size();i++) {
+                try {
+                    //imageUrl = imageUrl.replaceAll(" ", "%20");
+                    Bitmap bmpSEaIceRadar = LoadImageFromWebOperations(new URL(allImageUrls.get(i)));
+                    allImageBitmaps.add(bmpSEaIceRadar);
+
+                } catch (MalformedURLException e) {
+                    Log.d("url not formed", " correctly");
+                    e.printStackTrace();
+                }
             }
 
 
@@ -163,15 +175,7 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         private Bitmap LoadImageFromWebOperations(URL url) {
-            /*
-            try {
-                InputStream is = (InputStream) new URL(url).getContent();
-                Drawable d = Drawable.createFromStream(is, "src name");
-                return d;
-            } catch (Exception e) {
-                return null;
-            }
-            */
+
 
             try {
                 InputStream in = url.openStream();
@@ -184,24 +188,42 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
             return null;
         }
 
-        private String extractUrlOfTheLargeImage(String responseFromPuffinServer) {
+        private ArrayList<String> extractUrlOfTheLargeImage(String responseFromPuffinServer) {
             // try parse the string to a JSON object
+            int beginSearchFrom = 0;
+            ArrayList<String> allTheURLS = new ArrayList<String>();
 
+            while(true) {
 
-                int findLargeOccIndex= responseFromPuffinServer.indexOf("large");
+                int findLargeOccIndex = responseFromPuffinServer.indexOf("small",beginSearchFrom);
                 //Log.d("found large at",findPrev+"");
-                int picAddBegin = findLargeOccIndex + new String("large").length()+2;
-                int lastAdd = responseFromPuffinServer.indexOf("}",picAddBegin);
-                String pichttp = responseFromPuffinServer.substring(picAddBegin,lastAdd);
-                Log.d("extracted http id",pichttp);
+                int picAddBegin = findLargeOccIndex + new String("small").length() + 2;
+                int lastAdd = responseFromPuffinServer.indexOf(",", picAddBegin);
 
-                return pichttp;
+                if(findLargeOccIndex==-1 || lastAdd==-1){
+                    break;
+                }
+                beginSearchFrom = lastAdd;
+                String pichttp = responseFromPuffinServer.substring(picAddBegin, lastAdd);
+                pichttp = pichttp.substring(1, pichttp.length() - 1);
+                Log.d("extracted http id", pichttp);
+                allTheURLS.add(pichttp);
+            }
+
+            return allTheURLS;
         }
 
         protected void onPostExecute (String a){
 
-
-            imageIceRadar.setImageBitmap(bmpSEaIceRadar);
+            for(int i=0;i<allImageBitmaps.size();i++) {
+                Log.d("setting image",i+"");
+                imageIceRadar.setImageBitmap(allImageBitmaps.get(i));
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
         }
     }
