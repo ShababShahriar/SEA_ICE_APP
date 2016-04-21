@@ -8,7 +8,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.SyncStateContract;
 import android.speech.RecognizerIntent;
@@ -24,6 +26,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -39,6 +43,7 @@ public class SpeechToText extends AppCompatActivity {
         // hide the action bar
         //getActionBar().hide();
         setUpListeners();
+//        recordAudio();
     }
 
     private void setUpListeners() {
@@ -119,6 +124,33 @@ public class SpeechToText extends AppCompatActivity {
             }
 
         }
+    }
+
+    public void recordAudio() {
+        MediaRecorder recorder = new MediaRecorder();
+        String path = null;
+
+        String status = Environment.getExternalStorageState();
+        if(status.equals("mounted")){
+
+            File dir = new File("/sdcard/AlaskanHunters/recordings");
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            path = "/sdcard/AlaskanHunters/recordings";
+        }
+
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        if(path != null) recorder.setOutputFile(path);
+        try {
+            recorder.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        recorder.start();
+
     }
 
 

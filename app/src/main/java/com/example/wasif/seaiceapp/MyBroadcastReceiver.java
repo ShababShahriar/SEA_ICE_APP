@@ -18,7 +18,10 @@ import java.util.List;
 /**
  * Created by wasif on 4/17/16.
  */
-public class MyReceiver extends BroadcastReceiver {
+
+
+public class MyBroadcastReceiver extends BroadcastReceiver {
+
     Context context;
     DBHelper helper;
     @Override
