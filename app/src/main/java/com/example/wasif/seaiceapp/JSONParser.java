@@ -37,7 +37,7 @@ public class JSONParser {
                                        List<Pair> params) {
 
 
-        final String BASE_URL = "http://10.1.1.37/SeaIceApp/UC_Server/index.php/home";
+        final String BASE_URL = "http://10.1.1.38/SeaIceApp/UC_Server/index.php/home";
 
 
         URL url;

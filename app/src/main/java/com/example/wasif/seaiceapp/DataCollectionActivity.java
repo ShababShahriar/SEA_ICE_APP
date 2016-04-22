@@ -26,6 +26,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,6 +49,7 @@ public class DataCollectionActivity extends AppCompatActivity implements  Google
     private byte[] imageByteArray;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+
 
 
     private static final String LOG_TAG = "AudioRecordTest";
@@ -366,7 +369,7 @@ public class DataCollectionActivity extends AppCompatActivity implements  Google
     }
 
     class SendDataTask extends AsyncTask<Object, Void, String> {
-
+        JSONObject responseJson;
 
         @Override
         protected void onPreExecute() {
@@ -390,7 +393,7 @@ public class DataCollectionActivity extends AppCompatActivity implements  Google
 
             Log.d("just before sending ", dataToBeSent.toString());
             // getting JSON string from URL
-            //JSONObject responseJson = jParser.makeHttpRequest("/insertData", "GET", params);
+            responseJson = jParser.makeHttpRequest("/add_post", "POST", params);
             //Log.d("returned data", responseJson.toString());
             return null;
 
@@ -400,6 +403,12 @@ public class DataCollectionActivity extends AppCompatActivity implements  Google
 
         protected void onPostExecute(String a) {
 
+            if(responseJson!=null){
+                Log.d("the returned json is: ",responseJson.toString());
+            }
+            else{
+                Log.d("the returned json is: ","null");
+            }
 
         }
     }

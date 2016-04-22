@@ -82,7 +82,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
             Log.d("just before sending ", dataToBeSent.toString());
             // getting JSON string from URL
-            //JSONObject responseJson = jParser.makeHttpRequest("/insertData", "GET", params);
+            responseJSON = jParser.makeHttpRequest("/add_post", "POST", params);
             //Log.d("returned data", responseJson.toString());
             return null;
 

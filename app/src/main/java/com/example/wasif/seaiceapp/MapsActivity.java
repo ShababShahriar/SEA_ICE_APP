@@ -68,6 +68,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
 
     private final int REQ_CODE_SPEECH_INPUT = 100;
     private long mapUpdatePeriod = 600000;
+    private Marker currentLocationMarker=null;
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback(){
         @Override
@@ -373,7 +374,10 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
         if(location!=null){
 
             CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(location, 10);
-            mMap.addMarker(new MarkerOptions().position(location).title("Marker"));
+            if(currentLocationMarker!=null){
+                currentLocationMarker.remove();
+            }
+            currentLocationMarker = mMap.addMarker(new MarkerOptions().position(location).title("Marker"));
             mMap.animateCamera(yourLocation);
         }
     }
@@ -391,8 +395,15 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
         //LatLng coordinate = getLocationFromAddress(this,address);
          LatLng coordinate = new LatLng(lat, lon);
         CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 25);
-        mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title("Marker"));
+        if(currentLocationMarker!=null){
+            currentLocationMarker.remove();
+        }
+
+        currentLocationMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title("Marker"));
         mMap.animateCamera(yourLocation);
+
+
+
 
         /*Polyline line = mMap.addPolyline(new PolylineOptions()
                 .add(coordinate, new LatLng(23.81037, 90.4125))
