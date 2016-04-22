@@ -44,6 +44,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
@@ -544,11 +545,31 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
         protected void onPostExecute(String a) {
             if(responseJson!=null){
                 Log.d("the returned json",responseJson.toString());
-                setUpMap(lastLoc.getLatitude(),lastLoc.getLongitude());
+                setUpMap(lastLoc.getLatitude(), lastLoc.getLongitude());
+                parseJsonAndSetUI(responseJson);
             }
             else {
                 Log.d("the returned json", "is null");
             }
+        }
+
+        private void parseJsonAndSetUI(JSONObject responseJson) {
+            double seaSurfaceTemp = 0;
+            double windDirection= 0;
+            double windSpeed=0;
+            double seaIceFrac=0;
+
+            try {
+                seaIceFrac = responseJson.getDouble("seaIceFrac");
+                seaSurfaceTemp = responseJson.getDouble("seaSurfTemp");
+                windDirection = responseJson.getDouble("windDirection");
+                windSpeed = responseJson.getDouble("windSpeed");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.d("after extracting the json and getting values",seaSurfaceTemp+" "+windDirection+" "+windSpeed+" "+seaIceFrac);
+
+
         }
     }
 
