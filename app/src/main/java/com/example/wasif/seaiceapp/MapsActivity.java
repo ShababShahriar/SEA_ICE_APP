@@ -1,5 +1,6 @@
 package com.example.wasif.seaiceapp;
 
+
 import android.app.ActionBar;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -18,9 +19,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.FragmentActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 import android.view.ActionMode;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -44,6 +47,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -282,6 +286,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
                 //registering popup with OnMenuItemClickListener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
+                        //this is the place where we will bring data from other people
+                        new getAllNearbyPosts().execute(mLastLocation);
                         Toast.makeText(getApplicationContext(), "You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
                         return true;
                     }
@@ -573,6 +579,96 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
 
     }
 
+    class getAllNearbyPosts extends AsyncTask<Object, Void, String> {
+
+        Location lastLoc;
+        JSONObject responseJson;
+        ArrayList<UserReturnedPosts> allPostsFromUsers = new ArrayList<UserReturnedPosts>();
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        protected String doInBackground(Object... args) {
+
+            JSONParser jParser = new JSONParser();
+            // Building Parameters
+            List<Pair> params = new ArrayList<Pair>();
+            lastLoc = (Location)(args[0]);
+            params.add(new Pair("lat",lastLoc.getLatitude()));
+            params.add(new Pair("lon", lastLoc.getLongitude()));
+
+
+
+
+            //Log.d("just before sending ", params.toString());
+            // getting JSON string from URL
+            responseJson = jParser.makeHttpRequest("/get_nearby_posts", "GET", params);
+            //Log.d("returned data", responseJson.toString());
+            return null;
+
+
+        }
+
+
+        protected void onPostExecute(String a) {
+            if(responseJson!=null){
+                Log.d("the returned json", responseJson.toString());
+                //setUpMap(lastLoc.getLatitude(), lastLoc.getLongitude());
+                parseJsonAndSetUI(responseJson);
+            }
+            else {
+                Log.d("the returned json", "is null");
+            }
+        }
+
+        private void parseJsonAndSetUI(JSONObject responseJson) {
+
+
+            try {
+                String result = responseJson.getString("query");
+                if(result.equals("OK")) {
+
+                    JSONArray allPosts = responseJson.getJSONArray("posts");
+
+                    for (int i = 0; i < allPosts.length(); i++) {
+                        JSONObject curPost = allPosts.getJSONObject(i);
+                        //Log.d("the current post is", curPost.toString());
+                        byte[] imageArray = convertBase64toByteArray(curPost.getString("image"));
+                        byte[] audioArray = convertBase64toByteArray(curPost.getString("audio"));
+                        int postId = curPost.getInt("postId");
+                        String userId = curPost.getString("userId");
+                        String time = curPost.getString("time");
+                        double lat  = curPost.getDouble("lat");
+                        double lon  = curPost.getDouble("lon");
+                        double distance = curPost.getDouble("distance");
+
+                        UserReturnedPosts newPost = new UserReturnedPosts(postId,lat,lon,distance,imageArray,time,audioArray,userId);
+                        allPostsFromUsers.add(newPost);
+
+                        //Log.d("the returned image",Arrays.toString(imageArray));
+                    }
+                    Log.d("All the posts returned by the user",allPostsFromUsers.toString());
+                }
+                else{
+                    Toast.makeText(getApplicationContext(),"Sorry we cound not download the posts",Toast.LENGTH_LONG).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            //Log.d("after extracting the json and getting values",seaSurfaceTemp+" "+windDirection+" "+windSpeed+" "+seaIceFrac);
+
+
+        }
+
+        private byte[] convertBase64toByteArray(String encodedString) {
+
+            byte[] decoded = Base64.decode(encodedString,Base64.DEFAULT);
+            return decoded;
+        }
+    }
 
 
     class bringDataAboutMapTask extends AsyncTask<Object, Void, String> {

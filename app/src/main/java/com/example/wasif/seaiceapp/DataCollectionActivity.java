@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
@@ -354,9 +353,11 @@ public class DataCollectionActivity extends Activity implements  GoogleApiClient
     }
 
     private void storeDataInSQLite(CollectedData dataToBeSent) {
+        Log.d("the chosen database is", " internal");
 
         DBHelper helper = new DBHelper(this);
         helper.insertRecord(dataToBeSent);
+        Log.d("inserted in internal db",dataToBeSent.toString());
     }
 
     @Override

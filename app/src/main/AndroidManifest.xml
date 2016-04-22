@@ -73,6 +73,11 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
 
         </activity>
@@ -90,11 +95,7 @@
         <activity
             android:name=".DataCollectionActivity"
             android:label="@string/title_activity_data_collection" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <!-- START Added for GCM -->
