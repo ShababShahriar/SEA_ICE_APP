@@ -21,6 +21,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.util.Pair;
 import android.view.ActionMode;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,6 +41,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -60,6 +62,9 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private ShakeDetector mShakeDetector;
+
+    boolean insert_mode;
+    LatLng curLoc;
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
@@ -93,23 +98,38 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            insert_mode = false;
             switch (item.getItemId()){
+
                 case R.id.cab_add_memo:
                     //Toast.makeText(getApplicationContext(),"Add item here",Toast.LENGTH_SHORT).show();
+                    mMap.addMarker(new MarkerOptions().position(curLoc)
+                            .title("Memo")
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_memo_teal)));
                     Intent i1 = new Intent(getApplicationContext(), DataCollectionActivity.class);
                     startActivity(i1);
                     mode.finish();
                     return true;
                 case R.id.cab_hunting:
-                    Toast.makeText(getApplicationContext(),"Adding hunting place",Toast.LENGTH_SHORT).show();
+                    mMap.addMarker(new MarkerOptions().position(curLoc)
+                            .title("Hunting Place")
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_hunting_blue)));
+                    //Toast.makeText(getApplicationContext(),"Adding hunting place",Toast.LENGTH_SHORT).show();
                     mode.finish();
                     return true;
                 case R.id.cab_ice_crack:
-                    Toast.makeText(getApplicationContext(),"Adding Ice crack",Toast.LENGTH_SHORT).show();
+                    mMap.addMarker(new MarkerOptions().position(curLoc)
+                            .title("Ice Crack")
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_crack_purple)));
+
+                    //Toast.makeText(getApplicationContext(),"Adding Ice crack",Toast.LENGTH_SHORT).show();
                     mode.finish();
                     return true;
                 case R.id.cab_risky:
-                    Toast.makeText(getApplicationContext(),"Adding risky place",Toast.LENGTH_SHORT).show();
+                    mMap.addMarker(new MarkerOptions().position(curLoc)
+                            .title("Risky Place")
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_danger_red)));
+                    //Toast.makeText(getApplicationContext(),"Adding risky place",Toast.LENGTH_SHORT).show();
                     mode.finish();
                     return true;
 
@@ -282,6 +302,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
                 //registering popup with OnMenuItemClickListener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
+
                         Toast.makeText(getApplicationContext(), "You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
                         return true;
                     }
@@ -428,7 +449,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
         LatLng location = null;
         if(location!=null){
 
-            CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(location, 10);
+            CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(location, zoom_level);
             if(currentLocationMarker!=null){
                 currentLocationMarker.remove();
             }
@@ -449,7 +470,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
 
         //LatLng coordinate = getLocationFromAddress(this,address);
          LatLng coordinate = new LatLng(lat, lon);
-        CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 25);
+        CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, zoom_level);
         if(currentLocationMarker!=null){
             currentLocationMarker.remove();
         }
@@ -635,10 +656,24 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
             }
             Log.d("after extracting the json and getting values",seaSurfaceTemp+" "+windDirection+" "+windSpeed+" "+seaIceFrac);
 
-
+            set_infos( seaSurfaceTemp, windDirection, windSpeed, seaIceFrac);
         }
     }
+    void set_infos(double surfaceT, double windD, double windS, double iceFrac)
+    {
+        TextView lblSurf, lblwind, lblFrac, lblSummary;
+        lblSurf = (TextView) findViewById(R.id.lblMapTemperature);
+        lblwind = (TextView) findViewById(R.id.lblMapWindSpeed);
+        lblFrac = (TextView) findViewById(R.id.lblMapIceFract);
+        lblSummary = (TextView) findViewById(R.id.lblInfoSummary);
 
+        lblFrac.setText(String.valueOf(iceFrac*100) + "%");
+        lblSurf.setText(String.valueOf(surfaceT) + "°C");
+        lblwind.setText(String.valueOf(windS) + "\n" + String.valueOf(windD) + "°C");
+        lblSummary.setText(lblFrac.getText().toString() + " | " + lblSurf.getText().toString() + " | " + String.valueOf(windS) + " " + String.valueOf(windD) + "°C");
+
+
+    }
     @Override
     public void onConnectionSuspended(int i) {
 
@@ -680,7 +715,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
     public void onMapLongClick(LatLng latLng) {
         //Toast.makeText(this,"the pressed location is"+latLng.longitude+" "+latLng.latitude,Toast.LENGTH_LONG).show();
         //if (mActionMode != null)
-
+            insert_mode = true;
+            curLoc = latLng;
             mActionMode = startActionMode(mActionModeCallback);
 
         //Log.d("the long pressed location,",latLng.latitude +" " + latLng.longitude);

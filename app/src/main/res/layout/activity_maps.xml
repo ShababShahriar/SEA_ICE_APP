@@ -66,7 +66,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="34%"
+                    android:text="0%"
                     android:id="@+id/lblMapIceFract"
                     android:layout_weight="1"
                     android:gravity="center" />
@@ -89,7 +89,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="11m/s\n 41°NE"
+                    android:text="0m/s \n0°"
                     android:id="@+id/lblMapWindSpeed"
                     android:gravity="center"
                     android:layout_weight="1" />
@@ -112,7 +112,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="13°C"
+                    android:text="0°C"
                     android:id="@+id/lblMapTemperature"
                     android:layout_weight="1"
                     android:gravity="center" />
@@ -135,7 +135,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="32m/s\n 20°SW"
+                    android:text="0m/s\n 0°"
                     android:id="@+id/lblMapCurrentSpeed"
                     android:layout_weight="1"
                     android:gravity="center" />
