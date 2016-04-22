@@ -7,6 +7,7 @@ import android.location.Location;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -47,6 +48,7 @@ public class DataCollectionActivity extends AppCompatActivity implements  Google
     private byte[] imageByteArray;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+
 
     private static final String LOG_TAG = "AudioRecordTest";
     private static String mFileName = null;
@@ -308,6 +310,8 @@ public class DataCollectionActivity extends AppCompatActivity implements  Google
         super.onPause();
 
     }
+
+
 
     @Override
     public void onConnected(Bundle bundle) {

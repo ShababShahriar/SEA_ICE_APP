@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/abtn_distress_call"
+        android:icon="@drawable/ic_distress_call2"
+        android:title="Distress Call"
+        android:orderInCategory="2"
+        android:showAsAction="always"
+        />
+    <item android:id="@+id/abtn_radar"
+        android:icon="@drawable/ic_radar"
+        android:title="Ice Rader"
+        android:orderInCategory="3"
+        android:showAsAction="ifRoom"
+        />
+
+    <item android:id="@+id/abtn_memo"
+        android:icon="@drawable/ic_memos"
+        android:title="Memos"
+        android:orderInCategory="3"
+        android:showAsAction="ifRoom"
+        />
+    <item
+        android:icon="@drawable/ic_sort_by"
+        android:title="View"
+        android:orderInCategory="10"
+        android:showAsAction="always|withText">
+        <menu>
+            <item
+                android:id="@+id/menuSortNewest"
+                android:title="All" />
+            <item
+                android:id="@+id/menuSortRating"
+                android:title="Hunting Grounds" />
+            <item
+                android:id="@+id/menuDanger"
+                android:title="Dangerous Places" />
+        </menu>
+    </item>
+</menu>

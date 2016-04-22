@@ -37,8 +37,8 @@ public class JSONParser {
                                        List<Pair> params) {
 
 
-        //final String BASE_URL = "http://192.168.0.103/uc_brac_git/uc_server/index.php/home";
-        final String BASE_URL = "";
+        final String BASE_URL = "http://10.1.1.37/SeaIceApp/UC_Server/index.php/home";
+
 
         URL url;
 //        List<Pair> paramaters = new ArrayList<Pair>();
@@ -77,6 +77,7 @@ public class JSONParser {
                 urlConnection.setRequestMethod(method);
                 urlConnection.setDoInput(true);
                 urlConnection.connect();
+                Log.d("we are sending an url named ",url.toString());
 //                urlConnection.setInstanceFollowRedirects(false);
             }
 
@@ -100,7 +101,7 @@ public class JSONParser {
                 return null;
             }
             jsonString = buffer.toString();
-            //Log.d("Input Stream: ", jsonString);
+            Log.d("Input Stream: ", jsonString);
             urlConnection.disconnect();
 
         } catch (IOException e) {
