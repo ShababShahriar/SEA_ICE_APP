@@ -8,6 +8,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
@@ -22,6 +23,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -40,9 +45,44 @@ public class MapsActivity extends  FragmentActivity implements GoogleMap.OnMapCl
 
 
         setUpMapIfNeeded();
+        setUpPeriodicHandler();
 
     }
 
+    private void setUpPeriodicHandler() {
+
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //Do something after 100ms
+                //Toast.makeText(getApplicationContext(), "check", Toast.LENGTH_SHORT).show();
+                Log.d("calling at",getCurrentTimestamp() );
+                handler.postDelayed(this, 2000);
+            }
+        }, 1500);
+
+
+    }
+
+
+    private String getCurrentTimestamp(){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
+        //DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+        Date date = new Date();
+//            dateFormat.format(date);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        //cal.add(Calendar.MINUTE, -1 * timeToSubtract);
+        Date newDate = cal.getTime();
+        //Log.d("timestamp", dateFormat.format(newDate));
+
+        String timestamp = dateFormat.format(newDate);
+        //Log.d("timestamp: ", "" + timestamp);
+        return timestamp;
+    }
 
 
 
