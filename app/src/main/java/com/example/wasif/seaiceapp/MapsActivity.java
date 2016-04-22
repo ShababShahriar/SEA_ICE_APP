@@ -60,6 +60,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
     private Location mLastLocation;
     ActionMode mActionMode;
 
+    int zoom_level;
     private final int REQ_CODE_SPEECH_INPUT = 100;
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback(){
@@ -72,7 +73,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.map_cab, menu);
-            mode.setTitle("Select a category");
+            mode.setTitle("Select a placemarker type");
+            mode.setSubtitle("It will be added to the selected location");
             return true;
         }
 
@@ -84,21 +86,73 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()){
-                case R.id.cab_item1:
-                    Toast.makeText(getApplicationContext(),"Item1",Toast.LENGTH_LONG).show();
+                case R.id.cab_add_memo:
+                    //Toast.makeText(getApplicationContext(),"Add item here",Toast.LENGTH_SHORT).show();
+                    Intent i1 = new Intent(getApplicationContext(), DataCollectionActivity.class);
+                    startActivity(i1);
                     mode.finish();
                     return true;
+                case R.id.cab_hunting:
+                    Toast.makeText(getApplicationContext(),"Adding hunting place",Toast.LENGTH_SHORT).show();
+                    mode.finish();
+                    return true;
+                case R.id.cab_ice_crack:
+                    Toast.makeText(getApplicationContext(),"Adding Ice crack",Toast.LENGTH_SHORT).show();
+                    mode.finish();
+                    return true;
+                case R.id.cab_risky:
+                    Toast.makeText(getApplicationContext(),"Adding risky place",Toast.LENGTH_SHORT).show();
+                    mode.finish();
+                    return true;
+
                 default:
                     return false;
             }
         }
     };
 
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int action = event.getAction();
+        int keyCode = event.getKeyCode();
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                Log.d("keycode", "vol up");
+                if (action == KeyEvent.ACTION_DOWN) {
+                    //TODO
+                    Log.d("action", "inside if");
+                    if (zoom_level <20)
+                    {
+                        zoom_level++;
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom_level));
+                    }
+
+                    //Toast.makeText(getApplicationContext(), "Volume Up!", Toast.LENGTH_LONG).show();
+                }
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if (action == KeyEvent.ACTION_DOWN) {
+                    //TODO
+                    Log.d("action", "inside if");
+                    if (zoom_level > 1)
+                    {
+                        zoom_level--;
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(zoom_level));
+                    }
+                    //Toast.makeText(getApplicationContext(), "Volume Down!", Toast.LENGTH_LONG).show();
+                }
+                return true;
+            default:
+                return super.dispatchKeyEvent(event);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
+        zoom_level = 15;
         setup_actionbar();
         setUpMapIfNeeded();
         setup_checkbox();
@@ -168,8 +222,9 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
 
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    TextView t1 = (TextView) findViewById(R.id.lblRSpeech);
-                    t1.setText(result.get(0));
+                    //TextView t1 = (TextView) findViewById(R.id.lblRSpeech);
+                    //t1.setText(result.get(0));
+                    Toast.makeText(getApplicationContext(), "Received voice data: " + result.get(0) , Toast.LENGTH_LONG).show();
                     Log.d("returned answer:",result.toString());
                 }
                 break;
@@ -361,7 +416,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
 
         LatLng coordinate = getLocationFromAddress(this,address);
         // LatLng coordinate = new LatLng(lat, lon);
-        CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 15);
+        CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, zoom_level);
         mMap.addMarker(new MarkerOptions().position(coordinate).title("Marker"));
         mMap.animateCamera(yourLocation);
     }

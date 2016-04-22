@@ -28,14 +28,20 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:showAsAction="always|withText">
         <menu>
             <item
-                android:id="@+id/menuSortNewest"
+                android:id="@+id/abtn_all"
                 android:title="All" />
             <item
-                android:id="@+id/menuSortRating"
+                android:id="@+id/abtn_Hunting"
                 android:title="Hunting Grounds" />
             <item
-                android:id="@+id/menuDanger"
+                android:id="@+id/abtn_Danger"
                 android:title="Dangerous Places" />
+            <item
+                android:id="@+id/abtn_ice_crack"
+                android:title="Ice Cracks" />
+            <item
+                android:id="@+id/abtn_view_memo"
+                android:title="Memos (Photo and Audio)" />
         </menu>
     </item>
 </menu>

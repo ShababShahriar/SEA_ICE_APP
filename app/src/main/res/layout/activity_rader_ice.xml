@@ -10,7 +10,7 @@
     <ImageView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/imageView6"
+        android:id="@+id/imgRaderIceAnim"
         android:layout_gravity="center_horizontal"
         android:layout_weight="1"
         android:src="@mipmap/ic_launcher" />
@@ -23,7 +23,7 @@
         <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:id="@+id/seekBar"
+            android:id="@+id/seekbarIceAnim"
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
             android:max="15"
@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Animate"
-            android:id="@+id/button3" />
+            android:id="@+id/btnIceAnim" />
     </LinearLayout>
 
     <TextView
@@ -43,5 +43,5 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Last Updated: 23 June, 2015 (15 Frames)"
-        android:id="@+id/textView11" />
+        android:id="@+id/lblIceFractLastUpdated" />
 </LinearLayout>

@@ -6,14 +6,6 @@
     android:orientation="vertical"
     android:id="@+id/layoutRoot">
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="&lt;Your Speech>"
-        android:id="@+id/lblRSpeech"
-        android:visibility="visible" />
-
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
         android:layout_height="0dp" android:id="@+id/map"
@@ -75,7 +67,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="34%"
-                    android:id="@+id/textView"
+                    android:id="@+id/lblMapIceFract"
                     android:layout_weight="1"
                     android:gravity="center" />
 
@@ -98,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="11m/s\n 41°NE"
-                    android:id="@+id/textView3"
+                    android:id="@+id/lblMapWindSpeed"
                     android:gravity="center"
                     android:layout_weight="1" />
 
@@ -121,7 +113,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="13°C"
-                    android:id="@+id/textView4"
+                    android:id="@+id/lblMapTemperature"
                     android:layout_weight="1"
                     android:gravity="center" />
 
@@ -144,7 +136,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="32m/s\n 20°SW"
-                    android:id="@+id/textView5"
+                    android:id="@+id/lblMapCurrentSpeed"
                     android:layout_weight="1"
                     android:gravity="center" />
 
@@ -171,7 +163,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="7 Public Data available"
-                android:id="@+id/textView2"
+                android:id="@+id/lblPublicDataCount"
                 android:layout_weight="1"
                 android:layout_gravity="center_vertical" />
 

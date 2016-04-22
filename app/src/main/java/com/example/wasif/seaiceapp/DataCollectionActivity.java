@@ -1,5 +1,6 @@
 package com.example.wasif.seaiceapp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -38,7 +39,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class DataCollectionActivity extends AppCompatActivity implements  GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener{
+public class DataCollectionActivity extends Activity implements  GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener{
 
     private int REQUEST_IMAGE_CAPTURE = 1;
     private Bitmap imageBitmap;

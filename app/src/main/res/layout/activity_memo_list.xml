@@ -47,7 +47,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Delete Selected Packages"
-        android:id="@+id/button"
+        android:id="@+id/btnDeletePackage"
         android:layout_gravity="right" />
 
 </LinearLayout>
