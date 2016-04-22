@@ -19,6 +19,7 @@
     <script src="<?php echo base_url("assets/js/ie-emulation-modes-warning.js"); ?>"></script>
     <link href="<?php echo base_url("assets/css/mynavbar.css"); ?>" rel="stylesheet">
     <link href="<?php echo base_url("assets/css/newlogin.css"); ?>" rel="stylesheet">
+    <script src="<?php echo base_url("assets/js/newlogin.js"); ?>"></script>
   </head>
 
   <body style="background: #420202 !important"> 
@@ -50,7 +51,7 @@
         </div><!-- /container -->
     </div>
 
-    <script src="<?php echo base_url("assets/js/newlogin.js"); ?>"></script>
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="<?php echo base_url("assets/js/bootstrap.min.js"); ?>"></script>
     <!-- Just to make our placeholder images work. Don't actually copy the next line! -->

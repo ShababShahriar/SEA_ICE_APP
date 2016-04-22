@@ -14,6 +14,7 @@ class Home extends CI_Controller {
 		$this->load->library('form_validation');
 		  
 		$this->load->model('post_model');
+		$this->load->model('info_model');
 	}
 	 
 	public function index()
@@ -98,7 +99,7 @@ class Home extends CI_Controller {
 		//IF EQUALS, VERIFIED. INSERT INTO USER DATABASE; RETURN 1
 		//ELSE , RETURN 0
 	}
-	
+	/**
 	
 	public function test()
 	{
@@ -127,7 +128,7 @@ class Home extends CI_Controller {
 		/**
 			TEST
 		*/
-		
+		/**
 		$lat = $_GET['lat'];
 		$lon = $_GET['lon'];
 		
@@ -158,14 +159,14 @@ class Home extends CI_Controller {
 			
 			/**
 				Find upvote and downvote counts
-			*/
+			*//**
 			$temp = $this->post_model->get_vote_count($post['postId']);
 			$post['upCount']=$temp['upvotes'];
 			$post['downCount']=$temp['downvotes'];
 			
 			/**
 				Find user ids' who already have voted for the post
-			*/
+			*//**
 			$tmp = $this->post_model->get_voters($post['postId']);
 			$post['upVoters']=$tmp['up_voters'];
 			$post['downVoters']=$tmp['down_voters'];
@@ -296,7 +297,7 @@ class Home extends CI_Controller {
 		
 		
 		//$posts;
-		
+		/**
 		echo json_encode($jsonData);
 	}
 	
@@ -330,5 +331,26 @@ class Home extends CI_Controller {
 		$jsonData['rating']=$this->getDashboardGraphData($user_id);
 		
 		echo json_encode($jsonData);
+	}
+	*/
+	/**
+	neamul
+	*/
+	public function get_infos()
+	{
+		
+		$temp['lat'] = $_GET['lat'];
+		$temp['long'] = $_GET['long'];
+		$temp['user_id'] = $_GET['userId'];
+		//echo json_encode($temp);
+
+		//$result = $this->info_model->get_all_infos($temp);
+		$j['windSpeed'] = $this->info_model->get_wind_speed($temp);
+		$j['windDirection'] = $this->info_model->get_wind_direction($temp);
+		$j['seaSurfTemp'] = $this->info_model->get_sst($temp);
+		$j['seaIceFrac'] = $this->info_model->get_sif($temp);
+
+		echo json_encode($j);
+
 	}
 }

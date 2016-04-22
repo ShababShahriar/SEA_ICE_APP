@@ -10,27 +10,26 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
+import android.util.Pair;
 import android.view.ActionMode;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +44,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -62,6 +68,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
 
     int zoom_level;
     private final int REQ_CODE_SPEECH_INPUT = 100;
+    private long mapUpdatePeriod = 600000;
+    private Marker currentLocationMarker=null;
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback(){
         @Override
@@ -155,6 +163,9 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
         zoom_level = 15;
         setup_actionbar();
         setUpMapIfNeeded();
+
+        setUpPeriodicHandler();
+
         setup_checkbox();
         setup_buttons();
         setup_shake_sensor();
@@ -233,6 +244,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
         }
     }
 
+
     void setup_actionbar()
     {
         ActionBar actionBar = getActionBar();
@@ -278,12 +290,50 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
             }
         });
     }
+
+    private void setUpPeriodicHandler() {
+
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //Do something after 100ms
+                //Toast.makeText(getApplicationContext(), "check", Toast.LENGTH_SHORT).show();
+                //Log.d("calling at", getCurrentTimestamp());
+                setUpMapIfNeeded();
+                handler.postDelayed(this, mapUpdatePeriod);
+            }
+        }, 1500);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_map, menu);
-        return true;
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu_map, menu);
+            return true;
+
+
+    }
+
+
+    private String getCurrentTimestamp(){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
+        //DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+        Date date = new Date();
+//            dateFormat.format(date);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        //cal.add(Calendar.MINUTE, -1 * timeToSubtract);
+        Date newDate = cal.getTime();
+        //Log.d("timestamp", dateFormat.format(newDate));
+
+        String timestamp = dateFormat.format(newDate);
+        //Log.d("timestamp: ", "" + timestamp);
+        return timestamp;
+
     }
 
     @Override
@@ -369,6 +419,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
 
                // markADistrict("cox's bazar");
             }
+        }else{
+            buildGoogleApiClient();
         }
     }
 
@@ -377,7 +429,10 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
         if(location!=null){
 
             CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(location, 10);
-            mMap.addMarker(new MarkerOptions().position(location).title("Marker"));
+            if(currentLocationMarker!=null){
+                currentLocationMarker.remove();
+            }
+            currentLocationMarker = mMap.addMarker(new MarkerOptions().position(location).title("Marker"));
             mMap.animateCamera(yourLocation);
         }
     }
@@ -394,9 +449,16 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
 
         //LatLng coordinate = getLocationFromAddress(this,address);
          LatLng coordinate = new LatLng(lat, lon);
-        CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 15);
-        mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title("Marker"));
+        CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 25);
+        if(currentLocationMarker!=null){
+            currentLocationMarker.remove();
+        }
+
+        currentLocationMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title("Marker"));
         mMap.animateCamera(yourLocation);
+
+
+
 
         /*Polyline line = mMap.addPolyline(new PolylineOptions()
                 .add(coordinate, new LatLng(23.81037, 90.4125))
@@ -414,7 +476,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
 
     private void markMapOnAGivenAddress(String address){
 
-        LatLng coordinate = getLocationFromAddress(this,address);
+        LatLng coordinate = getLocationFromAddress(this, address);
         // LatLng coordinate = new LatLng(lat, lon);
         CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, zoom_level);
         mMap.addMarker(new MarkerOptions().position(coordinate).title("Marker"));
@@ -489,9 +551,92 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
             //mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
             //Toast.makeText(this, "Google client has returned not null", Toast.LENGTH_LONG).show();
             //Toast.makeText(this, mLastLocation.getLatitude() + " " + mLastLocation.getLongitude(), Toast.LENGTH_LONG).show();
-            setUpMap(mLastLocation.getLatitude(),mLastLocation.getLongitude());
+            Log.d("setting up map",mLastLocation.getLatitude()+" "+mLastLocation.getLongitude()+" "+getCurrentTimestamp());
+            if(isOnline(this)){
+                new bringDataAboutMapTask().execute(mLastLocation);
+            }
+            else{
+                Toast.makeText(this,"Sorry, you do not have internet connection",Toast.LENGTH_LONG).show();
+
+            }
+            //setUpMap(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         }
 
+    }
+
+    public boolean isOnline(Context context) {
+
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        //should check null because in air plan mode it will be null
+        return (netInfo != null && netInfo.isConnected());
+
+    }
+
+
+
+    class bringDataAboutMapTask extends AsyncTask<Object, Void, String> {
+
+        Location lastLoc;
+        JSONObject responseJson;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        protected String doInBackground(Object... args) {
+
+            JSONParser jParser = new JSONParser();
+            // Building Parameters
+            List<Pair> params = new ArrayList<Pair>();
+            lastLoc = (Location)(args[0]);
+            params.add(new Pair("lat",lastLoc.getLatitude()));
+            params.add(new Pair("long", lastLoc.getLongitude()));
+
+            params.add(new Pair("userId", Utility.getUserId()));
+
+
+            Log.d("just before sending ", params.toString());
+            // getting JSON string from URL
+            responseJson = jParser.makeHttpRequest("/get_infos", "GET", params);
+            //Log.d("returned data", responseJson.toString());
+            return null;
+
+
+        }
+
+
+        protected void onPostExecute(String a) {
+            if(responseJson!=null){
+                Log.d("the returned json",responseJson.toString());
+                setUpMap(lastLoc.getLatitude(), lastLoc.getLongitude());
+                parseJsonAndSetUI(responseJson);
+            }
+            else {
+                Log.d("the returned json", "is null");
+            }
+        }
+
+        private void parseJsonAndSetUI(JSONObject responseJson) {
+            double seaSurfaceTemp = 0;
+            double windDirection= 0;
+            double windSpeed=0;
+            double seaIceFrac=0;
+
+            try {
+                seaIceFrac = responseJson.getDouble("seaIceFrac");
+                seaSurfaceTemp = responseJson.getDouble("seaSurfTemp");
+                windDirection = responseJson.getDouble("windDirection");
+                windSpeed = responseJson.getDouble("windSpeed");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.d("after extracting the json and getting values",seaSurfaceTemp+" "+windDirection+" "+windSpeed+" "+seaIceFrac);
+
+
+        }
     }
 
     @Override
