@@ -65,6 +65,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private ShakeDetector mShakeDetector;
+    private DBHelperForUserPosts helperForPost = new DBHelperForUserPosts(this);
 
     boolean insert_mode;
     LatLng curLoc;
@@ -102,21 +103,28 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             insert_mode = false;
+            CustomMarker myMarker;
             switch (item.getItemId()){
 
                 case R.id.cab_add_memo:
                     //Toast.makeText(getApplicationContext(),"Add item here",Toast.LENGTH_SHORT).show();
                     mMap.addMarker(new MarkerOptions().position(curLoc)
                             .title("Memo")
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_memo_teal)));
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_memo_teal)));
+
                     Intent i1 = new Intent(getApplicationContext(), DataCollectionActivity.class);
                     startActivity(i1);
                     mode.finish();
+
                     return true;
                 case R.id.cab_hunting:
                     mMap.addMarker(new MarkerOptions().position(curLoc)
                             .title("Hunting Place")
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_hunting_blue)));
+
+                    myMarker = new CustomMarker(curLoc.latitude,curLoc.longitude,"Hunting Place");
+                    storeInSQLite(myMarker);
+                    Log.d("my marker is: ",myMarker.toString());
                     //Toast.makeText(getApplicationContext(),"Adding hunting place",Toast.LENGTH_SHORT).show();
                     mode.finish();
                     return true;
@@ -126,6 +134,9 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_crack_purple)));
 
                     //Toast.makeText(getApplicationContext(),"Adding Ice crack",Toast.LENGTH_SHORT).show();
+                    myMarker = new CustomMarker(curLoc.latitude,curLoc.longitude,"Ice Crack");
+                    storeInSQLite(myMarker);
+                    Log.d("my marker is: ", myMarker.toString());
                     mode.finish();
                     return true;
                 case R.id.cab_risky:
@@ -133,6 +144,9 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
                             .title("Risky Place")
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_danger_red)));
                     //Toast.makeText(getApplicationContext(),"Adding risky place",Toast.LENGTH_SHORT).show();
+                    myMarker = new CustomMarker(curLoc.latitude,curLoc.longitude,"Risky Place");
+                    storeInSQLite(myMarker);
+                    Log.d("my marker is: ", myMarker.toString());
                     mode.finish();
                     return true;
 
@@ -141,6 +155,11 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
             }
         }
     };
+
+    private void storeInSQLite(CustomMarker myMarker) {
+        helperForPost.insertUserPost(myMarker);
+
+    }
 
 
     @Override
@@ -183,6 +202,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        //helperForPost.onUpgrade(helperForPost.getWritableDatabase(),0,1);
+
         zoom_level = 15;
         setup_actionbar();
         setUpMapIfNeeded();
@@ -484,6 +505,35 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
         mMap.animateCamera(yourLocation);
 
 
+        //now add other markers which were saved in database
+        if(helperForPost==null) {
+            helperForPost = new DBHelperForUserPosts(this);
+        }
+        ArrayList<CustomMarker> allMyCustomMarkers = helperForPost.getDataForUser(Utility.getUserId());
+
+
+        for(int i=0;i<allMyCustomMarkers.size();i++){
+            CustomMarker curMarker = allMyCustomMarkers.get(i);
+            String markerTitle = curMarker.getMarkerType();
+            int resourceUsed = 0;
+
+            if(curMarker.getMarkerType().equals("Risky Place")){
+                resourceUsed = R.drawable.ic_danger_red;
+
+            }else if(curMarker.getMarkerType().equals("Hunting Place")){
+                resourceUsed = R.drawable.ic_hunting_blue;
+
+            }else if(curMarker.getMarkerType().equals("Ice Crack")){
+                resourceUsed = R.drawable.ic_crack_purple;
+
+            }
+
+            mMap.addMarker(new MarkerOptions().position(new LatLng(curMarker.getLatitude(),curMarker.getLongitude()))
+                    .title(markerTitle)
+                    .icon(BitmapDescriptorFactory.fromResource(resourceUsed)));
+        }
+
+
 
 
         /*Polyline line = mMap.addPolyline(new PolylineOptions()
@@ -751,7 +801,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
             }
             Log.d("after extracting the json and getting values",seaSurfaceTemp+" "+windDirection+" "+windSpeed+" "+seaIceFrac);
 
-            set_infos( seaSurfaceTemp, windDirection, windSpeed, seaIceFrac);
+            set_infos(seaSurfaceTemp, windDirection, windSpeed, seaIceFrac);
         }
     }
     void set_infos(double surfaceT, double windD, double windS, double iceFrac)
