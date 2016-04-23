@@ -306,9 +306,10 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
                         Intent j = new Intent(getApplicationContext(), RaderIce.class);
                         startActivity(j);
                     }
-                    else if (result.get(0).equals("memo"))
+                    else if (result.get(0).equals("help"))
                     {
-                        Toast.makeText(getApplicationContext(), "EXECUTING COMMAND: MEMO" , Toast.LENGTH_LONG).show();
+                        GcmTestActivity.distressCall();
+                        Toast.makeText(getApplicationContext(), "EXECUTING COMMAND: DISTRESS CALL" , Toast.LENGTH_LONG).show();
                         //new getAllNearbyPosts().execute(mLastLocation);
                     }
                         Toast.makeText(getApplicationContext(), "Received voice data: " + result.get(0) , Toast.LENGTH_LONG).show();
@@ -418,7 +419,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.abtn_distress_call:
-                Toast.makeText(this,"Distress call initiated!",Toast.LENGTH_LONG).show();
+                GcmTestActivity.distressCall();
+                //Toast.makeText(this,"Distress call initiated!",Toast.LENGTH_LONG).show();
                 // User chose the "Settings" item, show the app settings UI...
                 return true;
             case R.id.abtn_memo:
@@ -832,12 +834,10 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.d("after extracting the json and getting values",seaSurfaceTemp+" "+windDirection+" "+windSpeed+" "+seaIceFrac);
+            Log.d("after extracting the json and getting values", seaSurfaceTemp + " " + windDirection + " " + windSpeed + " " + seaIceFrac);
 
 
-            set_infos(Math.round(seaSurfaceTemp*100.0)/100.0, Math.round(windDirection*100.0)/100.0, Math.round(windSpeed*100.0)/100.0, Math.round(seaIceFrac*10000.0)/10000.0);
-
-            set_infos(seaSurfaceTemp, windDirection, windSpeed, seaIceFrac);
+            set_infos(Math.round(seaSurfaceTemp*100.0)/100.0, Math.round(windDirection*100.0)/100.0, Math.round(windSpeed*100.0)/100.0, Math.round(seaIceFrac*100.0)/100.0);
 
         }
     }

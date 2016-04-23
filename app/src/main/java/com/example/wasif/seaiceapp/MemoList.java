@@ -20,11 +20,15 @@ public class MemoList extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memo_list);
         lvwM = (ListView) findViewById(R.id.lvwMemoList1);
-        String[] mlist = new String[Utility.tempData.size()];
-        for (int i = 0; i<Utility.tempData.size(); i++)
-            mlist[i] = Utility.tempData.get(i).getTime();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mlist);
-        lvwM.setAdapter(adapter);
+        String[] mlist = null;
+        if (Utility.tempData != null)
+        {
+            mlist = new String[Utility.tempData.size()];
+            for (int i = 0; i<Utility.tempData.size(); i++)
+                mlist[i] = Utility.tempData.get(i).getTime();
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mlist);
+            lvwM.setAdapter(adapter);
+        }
         //lvwM.setItemChecked(2, true);
         //lvwM.setItemChecked(4, true);
         //lvwM.setItemChecked(5, true);

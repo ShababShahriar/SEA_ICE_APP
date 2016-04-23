@@ -3,14 +3,18 @@ package com.example.wasif.seaiceapp;
 /**
  * Created by Shabab on 4/17/2016.
  */
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.Toast;
 
 import com.example.wasif.seaiceapp.gcm.GCMIntentService;
@@ -18,8 +22,13 @@ import com.example.wasif.seaiceapp.gcm.NotifConfig;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.json.JSONObject;
 
-public class GcmTestActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class GcmTestActivity extends Activity {
 
     private String TAG = GcmTestActivity.class.getSimpleName();
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -60,6 +69,12 @@ public class GcmTestActivity extends AppCompatActivity {
         if (checkPlayServices()) {
             registerGCM();
         }
+
+
+    }
+
+    static void distressCall() {
+        new SendDistressTask().execute();
     }
 
     // starting the service to register with GCM
@@ -104,5 +119,50 @@ public class GcmTestActivity extends AppCompatActivity {
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         super.onPause();
+    }
+
+
+    static class SendDistressTask extends AsyncTask<Object, Void, String> {
+        JSONObject responseJson;
+
+        @Override
+        protected void onPreExecute() {
+
+            super.onPreExecute();
+            Log.d("onPreExecute", "Sending distress...");
+        }
+
+
+        protected String doInBackground(Object... args) {
+
+            JSONParser jParser = new JSONParser();
+            // Building Parameters
+            List<Pair> params = new ArrayList<Pair>();
+//            CollectedData dataToBeSent = (CollectedData)(args[0]);
+            params.add(new Pair("latitude", "23.7"));
+            params.add(new Pair("longitude", "90.4"));
+            params.add(new Pair("userId", 3));
+
+
+//            Log.d("just before sending ", dataToBeSent.toString());
+            // getting JSON string from URL
+            responseJson = jParser.makeHttpRequest("/add_distress", "GET", params);
+            //Log.d("returned data", responseJson.toString());
+            return null;
+
+
+        }
+
+
+        protected void onPostExecute(String a) {
+
+            if(responseJson!=null){
+                Log.d("the returned json is: ",responseJson.toString());
+            }
+            else{
+                Log.d("the returned json is: ","null");
+            }
+
+        }
     }
 }
