@@ -42,6 +42,7 @@ class Admin extends CI_Controller {
 	
 	public function index()			
 	{
+		$this->load->view('getuser');
 		redirect('admin/home','refresh');
 	}
 	
@@ -66,7 +67,9 @@ class Admin extends CI_Controller {
 	*/
 	public function home()
 	{
-		$this->load->view('adminhome');
+		$distress = $this->admin_model->get_distress_call();
+		$data['distress'] = $distress;
+		$this->load->view('adminhome',$data);
 	}
 
 	public function updateData()
@@ -124,6 +127,31 @@ class Admin extends CI_Controller {
 
 	public function process2()
 	{
+		$json = `python "D:/xampp/htdocs/SeaIceApp/UC_Admin/application/controllers/linearRegression.py"`;
+        echo $json;
+        // $args = explode(" ",$result);
+       	// echo $args[
+        // echo $args[4];
+        // echo $args[7];
+        echo "\n\n";
+        $jsonIterator = new RecursiveIteratorIterator(
+		    new RecursiveArrayIterator(json_decode($json, TRUE)),
+		    RecursiveIteratorIterator::SELF_FIRST);
+        $i=0;
+		foreach ($jsonIterator as $key => $val) {
+		    if(is_array($val)) {
+		        echo "$key:\n";
+		    } 
+		    else {
+		        //echo "$key => $val\n";
+		        echo $val;
+		        echo "\n";
+		        $param[$i++]=$val;
+		    }
+		   }
+		   //print_r($param);
+		   $this->admin_model->insert_regression($param);
+
 		echo '\n\n\nn\n\n\n\n\n\n';
 		
 		$myfile1 = fopen("D:/xampp/htdocs/SeaIceApp/UC_Admin/application/wind1.json", "w") or die("Unable to open file!");
@@ -145,4 +173,38 @@ class Admin extends CI_Controller {
 		
 
 	}
+
+	public function process3()
+	{
+		echo "everything is working fine";
+	}
+
+	/**
+	neamul 2
+	*/
+
+	public function showImg()
+	{
+		$posts = $this->admin_model->get_all_posts();
+		for($i=0;$i<sizeof($posts);$i++)
+		{
+			$name[$i] = $this->admin_model->get_username($posts[$i]['user_id']);
+			$posts[$i]['name'] = $name[$i];
+			$param['lat'] = $posts[$i]['lat'];
+			$param['lon'] = $posts[$i]['lon'];
+			$posts[$i]['wspd'] = $this->admin_model->get_wind_speed($param);
+			$posts[$i]['wdirec'] = $this->admin_model->get_wind_direction($param);
+			$posts[$i]['sst'] = $this->admin_model->get_sst($param);
+			$posts[$i]['sif'] = ($this->admin_model->get_sif($param)) * 100;
+		}
+		$data['posts'] = $posts;
+		$this->load->view('showimageAudio',$data);
+	}
+
+	public function getPosts()
+	{
+		$result = $this->admin_model->get_all_posts();
+		$data['posts'] = $result;
+	}
+
 }

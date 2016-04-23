@@ -17,8 +17,10 @@
     <link href="<?php echo base_url("assets/css/bootstrap.min.css"); ?>" rel="stylesheet">
     <link href="<?php echo base_url("assets/css/dashboard.css"); ?>" rel="stylesheet">
     <script src="<?php echo base_url("assets/js/ie-emulation-modes-warning.js"); ?>"></script>
+    <script src="<?php echo base_url("assets/js/map.js"); ?>"></script>
     <link href="<?php echo base_url("assets/css/mynavbar.css"); ?>" rel="stylesheet">
     <link href="<?php echo base_url("assets/css/newlogin.css"); ?>" rel="stylesheet">
+    <link href="<?php echo base_url("assets/css/map.css"); ?>" rel="stylesheet">
   </head>
 
   <body>
@@ -32,14 +34,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a id="logo" class="navbar-brand" href="">SeaIceApp</a>
+          <a id="logo" class="navbar-brand" href="">AlaskanHuntingNav</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="<?php echo site_url('admin'); ?>" class="glyphicon glyphicon-home"> Home</a></li>
+            <li><a href="<?php echo site_url('admin/showImg');?>">View Posts</a></li>
+            <li><a href="<?php echo site_url('admin/dataTest');?>">Update Data</a></li>
             <li><a href="<?php echo site_url('start/settings');?>">Settings</a></li>
-            <li><a href="<?php echo site_url('start/profile');?>">Profile</a></li>
-            <li><a href="<?php echo site_url('admin/updateData');?>">Update Data</a></li>
             <li><a href="<?php echo site_url('admin/logout'); ?>" class="glyphicon glyphicon-log-out"> LogOut</a></li>
           </ul>
           

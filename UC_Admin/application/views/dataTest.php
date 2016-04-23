@@ -4,30 +4,9 @@
   <script
     src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
 <script>
-function showUser(str) {
-  if (str=="") {
-    document.getElementById("txtHint").innerHTML="";
-    return;
-  } 
-  if (window.XMLHttpRequest) {
-    // code for IE7+, Firefox, Chrome, Opera, Safari
-    xmlhttp=new XMLHttpRequest();
-  } else { // code for IE6, IE5
-    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-  }
-  xmlhttp.onreadystatechange=function() {
-    if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-      document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
-    }
-  }
-  xmlhttp.open("GET","getUser("+str+")",true);
-  xmlhttp.send();
-};
 
-function my(){
-  var ar = [[11,5],[11,10],[11,9]];
-  document.getElementById("daa").value = ar;
-};
+
+
 
 function simpleHttpRequest() {
   var today = new Date();
@@ -148,50 +127,43 @@ function simpleHttpRequest() {
     }
   }
 };
-
-function tryNew() {
-    var fso = CreateObject("Scripting.FileSystemObject"); 
-    var s = fso.CreateTextFile("D:/test.txt", True);
-    s.writeline("HI");
-    s.writeline("Bye");
-    s.writeline("-----------------------------");
-    s.Close();
-    console.log("done");
-
-};
-
+/*
+window.setInterval(function(){
+  
+}, 120000);
+*/
 
 </script>
 </head>
 <body>
-
-<form>
-<select name="users" onchange="showUser(this.value)">
-<option value="">Select a person:</option>
-<option value="1">Peter Griffin</option>
-<option value="2">Lois Griffin</option>
-<option value="3">Joseph Swanson</option>
-<option value="4">Glenn Quagmire</option>
-</select>
-</form>
-<form method="post" action="process2">
-    <input type="hidden" name="sst1" id="1sst" />
-    <input type="hidden" name="sif1" id="1sif" />
-    <input type="hidden" name="wnd1" id="1wnd" />
-    <input type="hidden" name="wnd2" id="2wnd" />
-    <button type="submit">Send Data</button>
-  </form>
-  <form method="post" action="process">
-    <button type="submit">Run Data</button>
-  </form>
-
-  <button  onclick="simpleHttpRequest()">Get Data</button>
-
-
-<div>  <button  onclick="tryNew()">Get</button>
+   <br><br><br><br><br>
+<div>
+  <div class="col-md-3"><span class="label label-success">Press the button to get data from data center</span></div>
+  <div class="col-md-6">
+    <button class="btn btn-success" onclick="simpleHttpRequest()">Get Data</button>
+  </div>
+    <div class="col-md-3"></div>
 </div>
+
+<br><br><br><br><br>
 <br>
-<div id="txtHint"><b>Person info will be listed here.</b></div>
+<span >
+<div>
+  <div class="col-md-3"><span class="label label-primary">Press the button to send data</span></div>
+  <div class="col-md-6">
+    <form method="post" action="process2">
+        <input type="hidden" name="sst1" id="1sst" />
+        <input type="hidden" name="sif1" id="1sif" />
+        <input type="hidden" name="wnd1" id="1wnd" />
+        <input type="hidden" name="wnd2" id="2wnd" />
+        <button class="btn btn-warning" type="submit">Send Data</button>
+      </form>
+    </div>
+    <div class="col-md-3"></div>
+</div>
+  <br><br><br><br><br>
+
+
 
 </body>
 </html>
