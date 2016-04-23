@@ -16,7 +16,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Hunting Ground"
+            android:text="Marker"
             android:id="@+id/lblMarkerType"
             android:layout_weight="1" />
 

@@ -162,7 +162,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="7 Public Data available"
+                android:text="Click download to fetch data"
                 android:id="@+id/lblPublicDataCount"
                 android:layout_weight="1"
                 android:layout_gravity="center_vertical" />

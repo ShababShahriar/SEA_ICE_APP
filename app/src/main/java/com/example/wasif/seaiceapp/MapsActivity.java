@@ -67,6 +67,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
     private ShakeDetector mShakeDetector;
 
     boolean insert_mode;
+    enum PLACEMARKER_TYPE {ALL, HUNTING, CRACK, DANGEROUS, MEMO};
     LatLng curLoc;
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
@@ -142,6 +143,18 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
         }
     };
 
+    void place_memo_markers()
+    {
+
+        for (int i = 0; i< Utility.tempData.size(); i++)
+        {
+
+            mMap.addMarker(new MarkerOptions().position(new LatLng(Utility.tempData.get(i).getLatitude(), Utility.tempData.get(i).getLongitude()))
+                    .title("Memo" + i)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_memo_teal)));
+
+        }
+    }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -258,7 +271,23 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     //TextView t1 = (TextView) findViewById(R.id.lblRSpeech);
                     //t1.setText(result.get(0));
-                    Toast.makeText(getApplicationContext(), "Received voice data: " + result.get(0) , Toast.LENGTH_LONG).show();
+                    if (result.get(0).equals("download"))
+                    {
+                        Toast.makeText(getApplicationContext(), "EXECUTING COMMAND: DOWNLOAD" , Toast.LENGTH_LONG).show();
+                        new getAllNearbyPosts().execute(mLastLocation);
+                    }
+                    else if (result.get(0).equals("radar") || result.get(0).equals("weather") )
+                    {
+                        Toast.makeText(getApplicationContext(), "EXECUTING COMMAND: RADAR" , Toast.LENGTH_LONG).show();
+                        Intent j = new Intent(getApplicationContext(), RaderIce.class);
+                        startActivity(j);
+                    }
+                    else if (result.get(0).equals("memo"))
+                    {
+                        Toast.makeText(getApplicationContext(), "EXECUTING COMMAND: MEMO" , Toast.LENGTH_LONG).show();
+                        //new getAllNearbyPosts().execute(mLastLocation);
+                    }
+                        Toast.makeText(getApplicationContext(), "Received voice data: " + result.get(0) , Toast.LENGTH_LONG).show();
                     Log.d("returned answer:",result.toString());
                 }
                 break;
@@ -318,7 +347,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
     }
 
     private void setUpPeriodicHandler() {
-
 
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -671,6 +699,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
                         //Log.d("the returned image",Arrays.toString(imageArray));
                     }
                     Log.d("All the posts returned by the user",allPostsFromUsers.toString());
+                    Utility.tempData = allPostsFromUsers;
+                    place_memo_markers();
                 }
                 else{
                     Toast.makeText(getApplicationContext(),"Sorry we cound not download the posts",Toast.LENGTH_LONG).show();
@@ -751,7 +781,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
             }
             Log.d("after extracting the json and getting values",seaSurfaceTemp+" "+windDirection+" "+windSpeed+" "+seaIceFrac);
 
-            set_infos( seaSurfaceTemp, windDirection, windSpeed, seaIceFrac);
+            set_infos(Math.round(seaSurfaceTemp*100.0)/100.0, Math.round(windDirection*100.0)/100.0, Math.round(windSpeed*100.0)/100.0, Math.round(seaIceFrac*10000.0)/10000.0);
         }
     }
     void set_infos(double surfaceT, double windD, double windS, double iceFrac)
@@ -764,7 +794,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
 
         lblFrac.setText(String.valueOf(iceFrac*100) + "%");
         lblSurf.setText(String.valueOf(surfaceT) + "°C");
-        lblwind.setText(String.valueOf(windS) + "\n" + String.valueOf(windD) + "°C");
+        lblwind.setText(String.valueOf(windS) + "m/s\n" + String.valueOf(windD) + "°");
         lblSummary.setText(lblFrac.getText().toString() + " | " + lblSurf.getText().toString() + " | " + String.valueOf(windS) + " " + String.valueOf(windD) + "°C");
 
 
@@ -826,6 +856,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMapCli
     public boolean onMarkerClick(Marker marker) {
         Toast.makeText(this,"the pressed location is" + marker.getPosition().toString(),Toast.LENGTH_SHORT).show();
         Intent i = new Intent(getApplicationContext(), MarkerDetails.class);
+        i.putExtra("title", marker.getTitle());
         startActivity(i);
         return true;
     }

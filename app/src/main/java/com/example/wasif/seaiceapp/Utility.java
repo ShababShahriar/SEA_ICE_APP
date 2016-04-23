@@ -6,6 +6,7 @@ import android.widget.Toast;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -19,6 +20,7 @@ public class Utility {
     private static String ip, apiKey,username="Onix";
     public static boolean ipOK = false;
     private static boolean valid=false;
+    public static ArrayList<UserReturnedPosts> tempData;
 
     public static void setUser(int i,String uName,String apikey){
         id=i;
